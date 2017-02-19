@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:layout_marginLeft="5dp"
+              android:layout_marginRight="5dp"
+              android:layout_weight="1">
+        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/lvDevicemodule_detail"
+                  style="?android:attr/textAppearanceLarge"
+                  android:layout_height="0dp"
+                  android:layout_weight="0.46"
+                  android:layout_width="wrap_content"
+                  android:padding="16dp"/>
+            <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/temperature_chart"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.18"/>
+            <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/humidity_chart"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.18"/>
+            <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/pressure_chart"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.18"/>
+</LinearLayout>
+
+

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="service_url">http://192.168.181.199:8080/webui/webui/</string>
+
+    <string name="service_actuators_policy">6B24294BDEE46C557C392AA0A803BCE9</string>
+    <string name="service_monitoring_policy">88F34AC4FDF43EE523111A221B46FB00</string>
+    <string name="service_signaling_policy">7D1B5E7FA8BAD85B4FA9E004DF645255</string>
+    <string name="service_triggers_policy">C8CE94D9612B92CB0150ECDBDA0A4E78</string>
+
+    <string name="app_name">Easy SmartHouse</string>
+
+    <string name="module_signaling_title">Модуль сигнализации</string>
+    <string name="module_sensors_title">Модуль датчиков</string>
+    <string name="module_switch_title">Модуль выключателей</string>
+    <string name="module_triggers_title">Триггеры</string>
+    <string name="module_cameras_title">Камеры</string>
+
+    <string name="text_signalingmodule_status_open">Открыт</string>
+    <string name="text_signalingmodule_status_closed">Закрыт</string>
+
+    <string name="text_actuatorsmodule_status_on">ВКЛ.</string>
+    <string name="text_actuatorsmodule_status_off">ВЫКЛ.</string>
+    <string name="text_actuatorsmodule_button_toggle">Изменить</string>
+
+    <string name="text_triggersmodule_status_enabled">Включён</string>
+    <string name="text_triggersmodule_status_disabled">Выключен</string>
+</resources>

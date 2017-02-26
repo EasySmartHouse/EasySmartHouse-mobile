@@ -20,6 +20,7 @@ import net.easysmarthouse.mobile.ui.android.domain.ModulesContent;
 import net.easysmarthouse.mobile.ui.android.task.*;
 import net.easysmarthouse.mobile.ui.android.util.Log;
 import net.easysmarthouse.mobile.ui.android.util.ReflectionUtil;
+import net.easysmarthouse.mobile.ui.android.websocket.WebcamHandler;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,6 +49,7 @@ public class DeviceModuleDetailFragment extends Fragment {
     private final Handler taskHandler = new Handler();
     private boolean timerRunning = false;
     private Timer taskTimer = new Timer();
+    private volatile WebcamHandler webcamHandler;
 
 
     /**
@@ -74,27 +76,66 @@ public class DeviceModuleDetailFragment extends Fragment {
         TimerTask doAsynchronousTask = new TimerTask() {
             @Override
             public void run() {
-                taskHandler.post(new Runnable() {
-                    public void run() {
-                        try {
-                            VoidAsyncTask asyncTask = ReflectionUtil.createInstance(taskClass,
-                                    new Class[]{DevicesObserver.class}, devicesObserver);
-                            asyncTask.execute();
-                        } catch (Exception e) {
-                            Log.e("Error while executing task", e);
-                        }
-                    }
-                });
+                executeTask(taskClass, devicesObserver);
             }
         };
         taskTimer.schedule(doAsynchronousTask, 0, TASK_TIMER_DELAY);
         timerRunning = true;
     }
 
+
+    private void executeTask(final Class<? extends VoidAsyncTask> taskClass, final DevicesObserver devicesObserver){
+        taskHandler.post(new Runnable() {
+            public void run() {
+                try {
+                    VoidAsyncTask asyncTask = ReflectionUtil.createInstance(taskClass,
+                            new Class[]{DevicesObserver.class}, devicesObserver);
+                    asyncTask.execute();
+                } catch (Exception e) {
+                    Log.e("Error while executing task", e);
+                }
+            }
+        });
+    }
+
     private void stopRepeatableTasks(){
         if (timerRunning) {
             taskTimer.cancel();
             taskTimer.purge();
+        }
+    }
+
+    private void closeWebcams(){
+        taskHandler.post(new Runnable() {
+            public void run() {
+                try {
+                    WebcamCloseTask webcamCloseTask = new WebcamCloseTask(webcamHandler);
+                    webcamCloseTask.execute();
+                    webcamHandler = null;
+                } catch (Exception e) {
+                    Log.e("Error while webcam closing", e);
+                }
+            }
+        });
+    }
+
+    private void openWebcams(final DevicesObserver devicesObserver){
+        taskHandler.post(new Runnable() {
+            public void run() {
+                try {
+                    WebcamConnectTask webcamOpenTask = new WebcamConnectTask(devicesObserver);
+                    webcamHandler = webcamOpenTask.execute().get();
+                } catch (Exception e) {
+                    Log.e("Error while webcam opening", e);
+                }
+            }
+        });
+    }
+
+    private void stopAllTasks(){
+        stopRepeatableTasks();
+        if (webcamHandler != null){
+            closeWebcams();
         }
     }
 
@@ -108,33 +149,37 @@ public class DeviceModuleDetailFragment extends Fragment {
         Class<? extends VoidAsyncTask> asyncTaskClass = IdleTask.class;
         if (moduleItem != null) {
             activity.setTitle(moduleItem.getTitle());
-            stopRepeatableTasks();
+            stopAllTasks();
             switch(moduleItem.getModule()){
                 case SIGNALING:
                     adapter = new SignalingAdapter(rootView.getContext(), activity);
                     asyncTaskClass = GetSignalingElementsTask.class;
+                    addRepeatableTask(asyncTaskClass, (DevicesObserver)adapter);
                     break;
                 case SENSORS: {
                     adapter = new SensorsAdapter(rootView.getContext(), activity);
                     asyncTaskClass = GetSensorsTask.class;
+                    addRepeatableTask(asyncTaskClass, (DevicesObserver)adapter);
                     break;}
                 case SWITCH:{
                     adapter = new ActuatorsAdapter(rootView.getContext(), activity);
                     asyncTaskClass = GetActuatorsTask.class;
+                    addRepeatableTask(asyncTaskClass, (DevicesObserver)adapter);
                     break;}
                 case TRIGGERS:{
                     adapter = new TriggersAdapter(rootView.getContext(), activity);
                     asyncTaskClass = GetTriggersTask.class;
+                    addRepeatableTask(asyncTaskClass, (DevicesObserver)adapter);
                     break;}
                 case CAMERAS:
-                    //TODO add cameras adapter
+                    adapter = new WebcamAdapter(rootView.getContext(), activity);
+                    openWebcams((DevicesObserver)adapter);
                     break;
             }
         }
         if (adapter != null){
             lvDeviceModuleDetail.setAdapter(adapter);
         }
-        addRepeatableTask(asyncTaskClass, (DevicesObserver)adapter);
 
         return rootView;
     }

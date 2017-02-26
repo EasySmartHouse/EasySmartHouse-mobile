@@ -43,4 +43,5 @@ dependencies {
     compile 'net.easysmarthouse:device:0.1'
     compile 'com.github.creepid:grpc-client:0.1'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
+    compile 'com.neovisionaries:nv-websocket-client:1.31'
 }

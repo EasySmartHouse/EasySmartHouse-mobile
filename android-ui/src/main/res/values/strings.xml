@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="service_url">http://192.168.181.199:8080/webui/webui/</string>
+    <string name="webcam_url">ws://192.168.181.199:8123/</string>
 
     <string name="service_actuators_policy">6B24294BDEE46C557C392AA0A803BCE9</string>
     <string name="service_monitoring_policy">88F34AC4FDF43EE523111A221B46FB00</string>
